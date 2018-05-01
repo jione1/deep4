@@ -1,6 +1,7 @@
 import numpy as np
 from PIL import Image
 import os
+import glob
 
 def one_hot(i):
     a = np.zeros(15, 'uint8')
@@ -10,17 +11,19 @@ def one_hot(i):
 data_dir = './train/'
 nb_classes = 15
 
-result_arr = np.empty((12432, 12303)) # (전체 이미지 갯수, 64x64x3 + 15(클래스 갯수))
+result_arr = np.empty((12432, 64*64*3 + nb_classes)) # (전체 이미지 갯수, 64x64x3 + 15(클래스 갯수))
+food_names = os.listdir(data_dir) # carrot, cheese, egg, ...
 
-food_list = os.listdir(data_dir)
 idx_start = 0
-for cls, food_name in enumerate(food_list):
-    image_dir = data_dir + food_name + '/'
-    jpg_list = os.listdir(image_dir)
-    for idx, f in enumerate(jpg_list):
-        im = Image.open(image_dir + f)
+for cls, food in enumerate(food_names):
+    file_list = glob.glob(data_dir + food + '/*.jpg')
+    print(file_list)
+    print(len(file_list))
+
+    for idx, f in enumerate(file_list):
+        im = Image.open(f)
         pix = np.array(im)
-        arr = pix.reshape(1, 12288)
+        arr = pix.reshape(1, 64*64*3)
         result_arr[idx_start + idx] = np.append(arr, one_hot(cls))
     idx_start += len(file_list)
 
