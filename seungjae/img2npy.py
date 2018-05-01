@@ -28,3 +28,11 @@ for cls, food in enumerate(food_names):
     idx_start += len(file_list)
 
 np.save('result.npy', result_arr)
+
+# split train/test
+np.random.shuffle(result_arr)
+training_data = result_arr[:10000, :]
+test_data = result_arr[10000:, :]
+
+np.save('training_data.npy', training_data)
+np.save('test_data.npy', test_data)
