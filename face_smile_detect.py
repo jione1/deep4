@@ -2,8 +2,10 @@ import cv2
 import os
 import glob
 
-image_path = './aoa'
-save_path = './aoa_save'
+image_path = './images'
+save_path = './images_detected'
+if not os.path.exists(save_path):
+    os.makedirs(save_path)
 
 # Get user supplied values
 file_names = glob.glob(image_path + '/*.png') + glob.glob(image_path + '/*.jpg')
@@ -26,8 +28,8 @@ for f in file_names:
     faces = faceCascade.detectMultiScale(
         gray,
         scaleFactor=1.1,
-        minNeighbors=8,
-        minSize=(55, 55),
+        minNeighbors=10,
+        minSize=(30, 30),
         flags = cv2.CASCADE_SCALE_IMAGE
     )
 
@@ -43,8 +45,8 @@ for f in file_names:
         smile = smileCascade.detectMultiScale(
             roi_gray,
             scaleFactor=1.16,
-            minNeighbors=35,
-            minSize=(25, 25),
+            minNeighbors=40,
+            minSize=(10, 10),
             flags=cv2.CASCADE_SCALE_IMAGE
         )
         # Set region of interest for smiles
@@ -54,3 +56,4 @@ for f in file_names:
             cv2.putText(image, 'Smile', (x, y - 7), 3, 1.2, (0, 255, 0), 2, cv2.LINE_AA)
 
     cv2.imwrite('%s/%s' % (save_path, f.split('\\')[1]), image)
+
