@@ -3,15 +3,15 @@ import os
 import glob
 
 # Get user supplied values
-file_names = glob.glob('./son3/*.png') + glob.glob('./son3/*.jpg')
+file_names = glob.glob('./aoa/*.png') + glob.glob('./aoa/*.jpg')
 print(file_names)
 
 for f in file_names:
 
-    cascPath = 'haarcascade_frontalface_default.xml'
+    facePath = 'haarcascade_frontalface_default.xml'
 
     # Create the haar cascade
-    faceCascade = cv2.CascadeClassifier(cascPath)
+    faceCascade = cv2.CascadeClassifier(facePath)
 
     # Read the image
     image = cv2.imread(f)
@@ -20,22 +20,19 @@ for f in file_names:
     # Detect faces in the image
     faces = faceCascade.detectMultiScale(
         gray,
-        scaleFactor=1.1,
+        scaleFactor=1.2,
         minNeighbors=5,
-        minSize=(64, 64),
+        minSize=(16, 16),
         flags = cv2.CASCADE_SCALE_IMAGE
     )
 
     print(f)
     print("Found {0} faces!".format(len(faces)))
+    print(faces)
 
-    if len(faces) == 1:
-        # crop face
-        for (x, y, w, h) in faces:
-            #cv2.rectangle(image, (x, y), (x+w, y+h), (0, 255, 0), 2)
-            crop_img = image[y: y + h, x: x + w]  # Crop from x, y, w, h -> 100, 200, 300, 400
+    for (x, y, w, h) in faces:
+        cv2.rectangle(image, (x, y), (x+w, y+h), (0, 0, 255), 2)
 
-        crop_img = cv2.resize(crop_img, (64,64), interpolation=cv2.INTER_AREA)
-        cv2.imwrite('son_crop/d%s.jpg' % f[-10:-4], crop_img)
-    else:
-        pass
+    cv2.imwrite('./aoa/box.jpg', image)
+    #else:
+        #pass
