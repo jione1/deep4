@@ -3,7 +3,7 @@ from dface.core.detect import create_mtcnn_net, MtcnnDetector
 import dface.core.vision as vision
 import glob
 
-image_path = './'
+image_path = './smile_data'
 save_path = './save'
 
 # Get user supplied values
@@ -28,35 +28,42 @@ if __name__ == '__main__':
 
         height, width, channels = img.shape
 
-#        print(bboxs)
-# if len(bboxs) != 0:
-        x1 = bboxs[0][0]
-        y1 = bboxs[0][1]
-        x2 = bboxs[0][2]
-        y2 = bboxs[0][3]
-        w = (x2 - x1)
-        h = (y2 - y1)
-        
-#        print(w/2+x1,h/2+y1)
-#        print(h/height, w/width)
+#       print(bboxs)
+        if len(bboxs) != 0:
+            name = f.split('\\')[0]
+            file = open('./save/%s.txt' % name.split('.')[1], 'wt')
+#            print(len(bboxs))
+            for i in range(0,len(bboxs)):
+#                print(i)
 
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-       
-        smile = smileCascade.detectMultiScale(
-            gray,
-            scaleFactor=1.16,
-            minNeighbors=35,
-            minSize=(15, 15),
-            flags=cv2.CASCADE_SCALE_IMAGE
-        )
-        
-        name = f.split('\\')[0]
-        file1 = open('./save/%s.txt' % name.split('.')[1], 'wt')
-        print(smile)
-        if len(smile) == 0:
-            file1.write('0 %06f %06f %06f %06f \n' %((w/2+x1)/width, (h/2+y1)/height, w/width, h/height))
-        else:
-            file1.write('1 %06f %06f %06f %06f \n' %((w/2+x1)/width, (h/2+y1)/height, w/width, h/height))
-        
-#        vision.vis_face(img_bg,bboxs,landmarks)
-        file1.close()
+                x1 = bboxs[i][0]
+                y1 = bboxs[i][1]
+                x2 = bboxs[i][2]
+                y2 = bboxs[i][3]
+                w = (x2 - x1)
+                h = (y2 - y1)
+
+        #        print(w/2+x1,h/2+y1)
+        #        print(h/height, w/width)
+                print(x1, y1, w, h)
+
+                gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+                roi_gray = gray[int(y1):int(y1+h), int(x1):int(w+x1)]
+
+                smile = smileCascade.detectMultiScale(
+                    roi_gray,
+                    scaleFactor=1.16,
+                    minNeighbors=35,
+                    minSize=(15, 15),
+                    flags=cv2.CASCADE_SCALE_IMAGE
+                )
+
+                print("------")
+                print(len(smile))
+                if len(smile) == 0:
+                    file.write('0 %06f %06f %06f %06f \n' %((w/2+x1)/width, (h/2+y1)/height, w/width, h/height))
+                else:
+                    file.write('1 %06f %06f %06f %06f \n' %((w/2+x1)/width, (h/2+y1)/height, w/width, h/height))
+            
+    #        vision.vis_face(img_bg,bboxs,landmarks)
+            file.close()
